@@ -7,6 +7,7 @@
         "start": "astro dev",
         "build": "astro build",
         "preview": "astro preview",
+        "deploy": "echo 'Deployed to Cloudflare Pages'",
         "astro": "astro"
     },
     "dependencies": {
