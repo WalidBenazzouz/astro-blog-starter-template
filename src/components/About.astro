@@ -1,0 +1,96 @@
+---
+// About Component - Minimal about section
+---
+
+<section class="about" id="about">
+  <div class="container">
+    <div class="about-content reveal">
+      <div class="section-label">About</div>
+      
+      <p class="about-text">
+        Computer engineering student specializing in <span class="highlight">artificial intelligence</span>, 
+        <span class="highlight">machine learning</span>, and <span class="highlight">generative AI</span>. 
+        Seeking high-impact projects and international opportunities to build intelligent systems that matter.
+      </p>
+      
+      <div class="about-stats">
+        <div class="stat reveal-stagger stagger-1">
+          <span class="stat-value">5+</span>
+          <span class="stat-label">Projects</span>
+        </div>
+        <div class="stat reveal-stagger stagger-2">
+          <span class="stat-value">2</span>
+          <span class="stat-label">Internships</span>
+        </div>
+        <div class="stat reveal-stagger stagger-3">
+          <span class="stat-value">8+</span>
+          <span class="stat-label">Certifications</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about {
+    background: var(--color-bg);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .about-content {
+    max-width: 900px;
+  }
+
+  .about-text {
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    line-height: 1.5;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-2xl);
+    font-weight: 300;
+  }
+
+  .highlight {
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+
+  .about-stats {
+    display: flex;
+    gap: var(--space-2xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .stat-value {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  @media (max-width: 768px) {
+    .about-stats {
+      flex-wrap: wrap;
+      gap: var(--space-xl);
+    }
+
+    .stat {
+      min-width: 100px;
+    }
+  }
+</style>

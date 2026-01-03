@@ -1,0 +1,165 @@
+---
+// Contact Component - Minimal contact section
+---
+
+<section class="contact" id="contact">
+  <div class="container">
+    <div class="contact-content">
+      <div class="section-label reveal">Contact</div>
+      <h2 class="contact-heading reveal">Let's Build Something</h2>
+      
+      <div class="contact-links reveal">
+        <a href="mailto:Benazzouz.walid@outlook.com" class="contact-link">
+          <span class="link-label">Email</span>
+          <span class="link-value">Benazzouz.walid@outlook.com</span>
+          <span class="link-arrow">→</span>
+        </a>
+        
+        <a href="https://github.com/MCwalid" target="_blank" rel="noopener noreferrer" class="contact-link">
+          <span class="link-label">GitHub</span>
+          <span class="link-value">github.com/MCwalid</span>
+          <span class="link-arrow">→</span>
+        </a>
+        
+        <a href="tel:+212624983340" class="contact-link">
+          <span class="link-label">Phone</span>
+          <span class="link-value">+212 6 24 98 33 40</span>
+          <span class="link-arrow">→</span>
+        </a>
+      </div>
+      
+      <div class="contact-footer reveal">
+        <div class="location-badge">
+          <span class="badge-dot"></span>
+          <span>Available for opportunities</span>
+        </div>
+        <span class="copyright">© 2025 Walid Benazzouz</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    background: var(--color-bg);
+    border-top: 1px solid var(--color-border);
+    padding-bottom: var(--space-xl);
+  }
+
+  .contact-content {
+    max-width: 800px;
+  }
+
+  .contact-heading {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .contact-links {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-bottom: var(--space-2xl);
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-lg);
+    padding: var(--space-lg) 0;
+    border-bottom: 1px solid var(--color-border);
+    transition: all var(--duration-normal) var(--ease-out-quart);
+  }
+
+  .contact-link:first-child {
+    border-top: 1px solid var(--color-border);
+  }
+
+  .contact-link:hover {
+    padding-left: var(--space-md);
+    border-color: var(--color-accent);
+  }
+
+  .contact-link:hover .link-value {
+    color: var(--color-accent);
+  }
+
+  .contact-link:hover .link-arrow {
+    transform: translateX(8px);
+    color: var(--color-accent);
+  }
+
+  .link-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    min-width: 80px;
+  }
+
+  .link-value {
+    flex: 1;
+    font-size: 1.125rem;
+    color: var(--color-text-primary);
+    transition: color var(--duration-fast) var(--ease-out-quart);
+  }
+
+  .link-arrow {
+    font-size: 1.25rem;
+    color: var(--color-text-muted);
+    transition: all var(--duration-normal) var(--ease-out-expo);
+  }
+
+  .contact-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .location-badge {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  .badge-dot {
+    width: 8px;
+    height: 8px;
+    background: var(--color-accent);
+    border-radius: 50%;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .copyright {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.9); }
+  }
+
+  @media (max-width: 768px) {
+    .contact-link {
+      flex-wrap: wrap;
+    }
+
+    .link-label {
+      width: 100%;
+      margin-bottom: var(--space-xs);
+    }
+
+    .contact-footer {
+      flex-direction: column;
+      gap: var(--space-md);
+      text-align: center;
+    }
+  }
+</style>

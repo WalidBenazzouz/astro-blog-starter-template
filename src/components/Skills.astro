@@ -1,0 +1,147 @@
+---
+// Skills Component - Grouped skill blocks
+
+const skillGroups = [
+  {
+    title: "AI & Data",
+    skills: [
+      "Machine Learning",
+      "Deep Learning",
+      "Computer Vision",
+      "NLP",
+      "RAG Systems",
+      "LangChain",
+      "TensorFlow",
+      "PyTorch",
+      "Scikit-learn",
+      "Data Preprocessing"
+    ]
+  },
+  {
+    title: "Backend & Architecture",
+    skills: [
+      "Python",
+      "Java",
+      "FastAPI",
+      "Spring Boot",
+      "REST APIs",
+      "Microservices",
+      "Kafka",
+      "API Gateway"
+    ]
+  },
+  {
+    title: "DevOps & Cloud",
+    skills: [
+      "Docker",
+      "Kubernetes",
+      "CI/CD Pipelines",
+      "GitHub Actions",
+      "MySQL",
+      "PostgreSQL",
+      "MongoDB",
+      "Oracle"
+    ]
+  },
+  {
+    title: "Frontend & Tools",
+    skills: [
+      "React",
+      "Next.js",
+      "JavaScript",
+      "Git",
+      "VS Code",
+      "IntelliJ IDEA",
+      "Postman",
+      "Figma"
+    ]
+  }
+];
+---
+
+<section class="skills" id="skills">
+  <div class="container">
+    <div class="section-label reveal">Expertise</div>
+    <h2 class="skills-heading reveal">Technical Stack</h2>
+    
+    <div class="skills-grid">
+      {skillGroups.map((group, groupIndex) => (
+        <div class={`skill-group reveal-stagger stagger-${groupIndex + 1}`}>
+          <h3 class="group-title">{group.title}</h3>
+          <div class="group-skills">
+            {group.skills.map((skill) => (
+              <span class="skill-tag">{skill}</span>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .skills {
+    background: var(--color-bg);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .skills-heading {
+    margin-bottom: var(--space-2xl);
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-xl);
+  }
+
+  .skill-group {
+    padding: var(--space-lg);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    transition: border-color var(--duration-normal) var(--ease-out-quart);
+  }
+
+  .skill-group:hover {
+    border-color: var(--color-accent);
+  }
+
+  .group-title {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: var(--space-lg);
+    padding-bottom: var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .group-skills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .skill-tag {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    padding: var(--space-xs) var(--space-sm);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    transition: all var(--duration-fast) var(--ease-out-quart);
+  }
+
+  .skill-tag:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+    background: var(--color-accent-dim);
+  }
+
+  @media (max-width: 768px) {
+    .skills-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

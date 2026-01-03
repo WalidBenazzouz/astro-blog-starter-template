@@ -1,0 +1,161 @@
+---
+/**
+ * SplineRobot Component
+ * 
+ * A 3D robot that follows cursor movement using Spline.
+ * The cursor-following behavior is built into the Spline scene itself.
+ * 
+ * Features:
+ * - 3D robot renders in a canvas
+ * - Built-in cursor tracking with spring physics
+ * - Lazy loading for performance
+ * - Loading state with spinner
+ */
+
+interface Props {
+  className?: string;
+}
+
+const { className = '' } = Astro.props;
+---
+
+<div class:list={["spline-robot-container", className]} id="splineContainer">
+  <!-- Loading State -->
+  <div class="spline-loader" id="splineLoader">
+    <div class="loader-spinner"></div>
+    <span class="loader-text">Loading 3D...</span>
+  </div>
+  
+  <!-- Spline Canvas will be inserted here -->
+  <canvas id="splineCanvas" class="spline-canvas"></canvas>
+</div>
+
+<style>
+  .spline-robot-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 400px;
+    overflow: hidden;
+    background: transparent;
+  }
+
+  .spline-canvas {
+    width: 100% !important;
+    height: 100% !important;
+    display: block;
+    opacity: 0;
+    transition: opacity 0.5s ease-out;
+  }
+
+  .spline-canvas.loaded {
+    opacity: 1;
+  }
+
+  /* Loading State */
+  .spline-loader {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-md, 1rem);
+    background: transparent;
+    z-index: 10;
+    transition: opacity 0.4s ease-out;
+  }
+
+  .spline-loader.hidden {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .loader-spinner {
+    width: 40px;
+    height: 40px;
+    border: 2px solid rgba(255, 107, 0, 0.2);
+    border-top-color: rgba(255, 107, 0, 0.8);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .loader-text {
+    font-family: var(--font-mono, monospace);
+    font-size: 0.75rem;
+    color: var(--color-text-muted, #666);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .spline-robot-container {
+      min-height: 300px;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * Initialize Spline 3D Robot
+   * 
+   * Uses @splinetool/runtime for vanilla JS Spline integration.
+   * The Spline scene has built-in cursor following behavior.
+   */
+  
+  // Spline scene URL - 3D robot with cursor following
+  const SPLINE_SCENE_URL = 'https://prod.spline.design/UbM7F-HZcyTbZ4y3/scene.splinecode';
+
+  async function initSpline() {
+    const canvas = document.getElementById('splineCanvas') as HTMLCanvasElement;
+    const loader = document.getElementById('splineLoader');
+    
+    if (!canvas) {
+      console.error('Spline canvas not found');
+      return;
+    }
+
+    try {
+      // Dynamically import Spline runtime
+      const { Application } = await import('@splinetool/runtime');
+      
+      // Create Spline application
+      const spline = new Application(canvas);
+      
+      // Load the scene
+      await spline.load(SPLINE_SCENE_URL);
+      
+      // Show canvas, hide loader
+      canvas.classList.add('loaded');
+      loader?.classList.add('hidden');
+      
+      console.log('Spline 3D robot loaded successfully');
+      
+    } catch (error) {
+      console.error('Failed to load Spline scene:', error);
+      
+      // Hide loader and show error state
+      if (loader) {
+        loader.innerHTML = `
+          <span class="loader-text" style="color: var(--color-accent, #8a2be2);">
+            3D scene unavailable
+          </span>
+        `;
+      }
+    }
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initSpline);
+  } else {
+    initSpline();
+  }
+</script>

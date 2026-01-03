@@ -1,0 +1,420 @@
+---
+/**
+ * CursorSpotlight Component
+ * 
+ * A mouse-tracking "robot / spotlight" effect with spring physics.
+ * Creates an AI-entity that follows the cursor with organic, delayed motion.
+ * 
+ * Behavior:
+ * - Continuously tracks mouse position
+ * - Moves with smooth spring inertia
+ * - Slightly lags behind cursor (organic feeling)
+ * - Never snaps instantly
+ * - Feels like a "living AI entity following the user"
+ * 
+ * Implementation: Vanilla JS with requestAnimationFrame + lerp interpolation
+ */
+---
+
+<!-- Spotlight Container -->
+<div class="cursor-spotlight-container" id="cursorSpotlightContainer">
+  <!-- Outer Glow Ring - largest, softest blur -->
+  <div class="spotlight-ring spotlight-ring--outer" id="spotlightOuter"></div>
+  
+  <!-- Middle Glow Ring - medium blur -->
+  <div class="spotlight-ring spotlight-ring--middle" id="spotlightMiddle"></div>
+  
+  <!-- Inner Core - smallest, brightest -->
+  <div class="spotlight-core" id="spotlightCore"></div>
+</div>
+
+<style>
+  /* ============================================
+   * CURSOR SPOTLIGHT STYLES
+   * Spring-physics mouse follower effect
+   * ============================================ */
+
+  .cursor-spotlight-container {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9999;
+    overflow: hidden;
+    /* Hardware acceleration for smooth performance */
+    will-change: contents;
+  }
+
+  /* Base ring styles - shared properties */
+  .spotlight-ring,
+  .spotlight-core {
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+    /* GPU acceleration via translate3d (set via JS) */
+    will-change: transform;
+    /* Start centered and invisible until mouse enters */
+    opacity: 0;
+    transition: opacity 0.4s ease-out;
+  }
+
+  /* Outer ring - largest, softest glow */
+  .spotlight-ring--outer {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(
+      circle at center,
+      rgba(255, 107, 0, 0.08) 0%,
+      rgba(255, 107, 0, 0.04) 30%,
+      rgba(255, 107, 0, 0.01) 60%,
+      transparent 100%
+    );
+    filter: blur(40px);
+  }
+
+  /* Middle ring - medium glow */
+  .spotlight-ring--middle {
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(
+      circle at center,
+      rgba(255, 140, 50, 0.15) 0%,
+      rgba(255, 107, 0, 0.08) 40%,
+      transparent 100%
+    );
+    filter: blur(20px);
+  }
+
+  /* Inner core - brightest, sharpest */
+  .spotlight-core {
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(
+      circle at center,
+      rgba(255, 165, 80, 0.3) 0%,
+      rgba(255, 140, 50, 0.15) 50%,
+      transparent 100%
+    );
+    filter: blur(8px);
+    /* Subtle pulsing animation for "alive" feeling */
+    animation: corePulse 3s ease-in-out infinite;
+  }
+
+  /* Pulse animation for organic feel */
+  @keyframes corePulse {
+    0%, 100% {
+      transform: translate3d(var(--x, 0px), var(--y, 0px), 0) scale(1);
+      opacity: 0.9;
+    }
+    50% {
+      transform: translate3d(var(--x, 0px), var(--y, 0px), 0) scale(1.1);
+      opacity: 1;
+    }
+  }
+
+  /* Active state - shown when mouse is in viewport */
+  .cursor-spotlight-container.active .spotlight-ring,
+  .cursor-spotlight-container.active .spotlight-core {
+    opacity: 1;
+  }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    .spotlight-core {
+      animation: none;
+    }
+    .spotlight-ring,
+    .spotlight-core {
+      transition: transform 0.1s linear;
+    }
+  }
+
+  /* Hide on touch devices (no mouse) */
+  @media (hover: none) and (pointer: coarse) {
+    .cursor-spotlight-container {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  /**
+   * ============================================
+   * CURSOR SPOTLIGHT - SPRING PHYSICS ENGINE
+   * ============================================
+   * 
+   * Creates a mouse-following spotlight with spring-based interpolation.
+   * 
+   * Key behaviors:
+   * - Spring physics for smooth, organic motion
+   * - Each layer follows with different lag (parallax depth)
+   * - Lerp (linear interpolation) for smooth easing
+   * - requestAnimationFrame for 60fps smooth animation
+   * - Hardware-accelerated transforms (translate3d)
+   */
+
+  // ============================================
+  // CONFIGURATION - Tune these for feel
+  // ============================================
+  
+  const CONFIG = {
+    // Spring stiffness (0-1): Higher = faster response
+    // Lower values = more lag / organic feel
+    OUTER_SPRING: 0.03,   // Outer ring - slowest, most lag
+    MIDDLE_SPRING: 0.06,  // Middle ring - medium lag
+    CORE_SPRING: 0.09,    // Core - fastest, but still smooth
+    
+    // Damping factor (0-1): Controls velocity decay
+    // Higher = quicker stop, Lower = more momentum
+    DAMPING: 0.85,
+    
+    // Minimum velocity threshold to stop animation
+    VELOCITY_THRESHOLD: 0.01,
+    
+    // Offsets to center elements on cursor
+    OUTER_OFFSET: 200,   // Half of outer ring size
+    MIDDLE_OFFSET: 100,  // Half of middle ring size
+    CORE_OFFSET: 40      // Half of core size
+  };
+
+  // ============================================
+  // STATE
+  // ============================================
+  
+  // Target position (where mouse is)
+  let targetX = 0;
+  let targetY = 0;
+  
+  // Current positions (interpolated)
+  let outerX = 0, outerY = 0;
+  let middleX = 0, middleY = 0;
+  let coreX = 0, coreY = 0;
+  
+  // Velocities for momentum
+  let outerVelX = 0, outerVelY = 0;
+  let middleVelX = 0, middleVelY = 0;
+  let coreVelX = 0, coreVelY = 0;
+  
+  // Animation state
+  let isAnimating = false;
+  let animationFrameId: number | null = null;
+  let mouseInViewport = false;
+
+  // ============================================
+  // DOM ELEMENTS
+  // ============================================
+  
+  const container = document.getElementById('cursorSpotlightContainer');
+  const outerRing = document.getElementById('spotlightOuter');
+  const middleRing = document.getElementById('spotlightMiddle');
+  const core = document.getElementById('spotlightCore');
+
+  // ============================================
+  // SPRING PHYSICS INTERPOLATION
+  // ============================================
+  
+  /**
+   * Spring-based interpolation with damping
+   * Creates the organic, delayed following motion
+   * 
+   * @param current - Current position
+   * @param target - Target position (mouse)
+   * @param velocity - Current velocity
+   * @param spring - Spring stiffness (0-1)
+   * @returns {{ pos: number, vel: number }} - New position and velocity
+   */
+  function springInterpolate(
+    current: number, 
+    target: number, 
+    velocity: number, 
+    spring: number
+  ): { pos: number; vel: number } {
+    // Calculate spring force (difference to target)
+    const force = (target - current) * spring;
+    
+    // Apply force to velocity
+    let newVelocity = (velocity + force) * CONFIG.DAMPING;
+    
+    // Apply velocity to position
+    const newPosition = current + newVelocity;
+    
+    return { pos: newPosition, vel: newVelocity };
+  }
+
+  // ============================================
+  // ANIMATION LOOP
+  // ============================================
+  
+  /**
+   * Main animation loop using requestAnimationFrame
+   * Updates all spotlight layer positions with spring physics
+   */
+  function animate() {
+    // Update outer ring (slowest)
+    const outerResult = {
+      x: springInterpolate(outerX, targetX, outerVelX, CONFIG.OUTER_SPRING),
+      y: springInterpolate(outerY, targetY, outerVelY, CONFIG.OUTER_SPRING)
+    };
+    outerX = outerResult.x.pos;
+    outerY = outerResult.y.pos;
+    outerVelX = outerResult.x.vel;
+    outerVelY = outerResult.y.vel;
+
+    // Update middle ring (medium speed)
+    const middleResult = {
+      x: springInterpolate(middleX, targetX, middleVelX, CONFIG.MIDDLE_SPRING),
+      y: springInterpolate(middleY, targetY, middleVelY, CONFIG.MIDDLE_SPRING)
+    };
+    middleX = middleResult.x.pos;
+    middleY = middleResult.y.pos;
+    middleVelX = middleResult.x.vel;
+    middleVelY = middleResult.y.vel;
+
+    // Update core (fastest, but still smooth)
+    const coreResult = {
+      x: springInterpolate(coreX, targetX, coreVelX, CONFIG.CORE_SPRING),
+      y: springInterpolate(coreY, targetY, coreVelY, CONFIG.CORE_SPRING)
+    };
+    coreX = coreResult.x.pos;
+    coreY = coreResult.y.pos;
+    coreVelX = coreResult.x.vel;
+    coreVelY = coreResult.y.vel;
+
+    // Apply transforms using translate3d for GPU acceleration
+    if (outerRing) {
+      outerRing.style.transform = `translate3d(${outerX - CONFIG.OUTER_OFFSET}px, ${outerY - CONFIG.OUTER_OFFSET}px, 0)`;
+    }
+    if (middleRing) {
+      middleRing.style.transform = `translate3d(${middleX - CONFIG.MIDDLE_OFFSET}px, ${middleY - CONFIG.MIDDLE_OFFSET}px, 0)`;
+    }
+    if (core) {
+      core.style.transform = `translate3d(${coreX - CONFIG.CORE_OFFSET}px, ${coreY - CONFIG.CORE_OFFSET}px, 0)`;
+    }
+
+    // Check if we should continue animating
+    // Stop when velocities are very small and mouse is stationary
+    const totalVelocity = Math.abs(outerVelX) + Math.abs(outerVelY) + 
+                          Math.abs(middleVelX) + Math.abs(middleVelY) + 
+                          Math.abs(coreVelX) + Math.abs(coreVelY);
+    
+    if (totalVelocity > CONFIG.VELOCITY_THRESHOLD || mouseInViewport) {
+      animationFrameId = requestAnimationFrame(animate);
+    } else {
+      isAnimating = false;
+    }
+  }
+
+  /**
+   * Starts the animation loop if not already running
+   */
+  function startAnimation() {
+    if (!isAnimating) {
+      isAnimating = true;
+      animate();
+    }
+  }
+
+  // ============================================
+  // EVENT HANDLERS
+  // ============================================
+  
+  /**
+   * Mouse move handler
+   * Captures cursor position and triggers animation
+   */
+  function handleMouseMove(e: MouseEvent) {
+    // Update target to mouse position
+    targetX = e.clientX;
+    targetY = e.clientY;
+    
+    // Ensure animation is running
+    startAnimation();
+  }
+
+  /**
+   * Mouse enter handler
+   * Shows the spotlight when mouse enters viewport
+   */
+  function handleMouseEnter(e: MouseEvent) {
+    mouseInViewport = true;
+    
+    // Initialize positions to prevent snap from corner
+    if (!isAnimating) {
+      targetX = e.clientX;
+      targetY = e.clientY;
+      outerX = middleX = coreX = targetX;
+      outerY = middleY = coreY = targetY;
+    }
+    
+    // Show spotlight
+    container?.classList.add('active');
+    
+    startAnimation();
+  }
+
+  /**
+   * Mouse leave handler
+   * Hides the spotlight when mouse leaves viewport
+   */
+  function handleMouseLeave() {
+    mouseInViewport = false;
+    container?.classList.remove('active');
+  }
+
+  // ============================================
+  // INITIALIZATION
+  // ============================================
+  
+  /**
+   * Initialize the spotlight system
+   * Sets up event listeners and initial state
+   */
+  function init() {
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (prefersReducedMotion.matches) {
+      // Use simpler animation for reduced motion
+      CONFIG.OUTER_SPRING = 0.2;
+      CONFIG.MIDDLE_SPRING = 0.2;
+      CONFIG.CORE_SPRING = 0.2;
+    }
+
+    // Set initial positions off-screen
+    targetX = -500;
+    targetY = -500;
+    outerX = middleX = coreX = targetX;
+    outerY = middleY = coreY = targetY;
+
+    // Add event listeners
+    document.addEventListener('mousemove', handleMouseMove, { passive: true });
+    document.addEventListener('mouseenter', handleMouseEnter);
+    document.addEventListener('mouseleave', handleMouseLeave);
+
+    // Handle page visibility changes (pause when tab not visible)
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) {
+        // Pause animation when tab is hidden
+        if (animationFrameId) {
+          cancelAnimationFrame(animationFrameId);
+          isAnimating = false;
+        }
+      } else if (mouseInViewport) {
+        // Resume when visible again
+        startAnimation();
+      }
+    });
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    if (animationFrameId) {
+      cancelAnimationFrame(animationFrameId);
+    }
+  });
+</script>

@@ -1,0 +1,82 @@
+---
+import CursorSpotlight from '../components/CursorSpotlight.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { 
+  title = "Walid Benazzouz — AI Engineer", 
+  description = "AI Engineer specializing in Machine Learning, Deep Learning, and Generative AI. Building intelligent systems that create impact."
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="author" content="Walid Benazzouz" />
+    <meta name="theme-color" content="#0a0a0a" />
+    
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <title>{title}</title>
+  </head>
+  <body>
+    <!-- Global Mouse-Tracking Spotlight Effect -->
+    <CursorSpotlight />
+    
+    <slot />
+    
+    <script>
+      // Intersection Observer for scroll reveal animations
+      const observerOptions = {
+        root: null,
+        rootMargin: '0px 0px -100px 0px',
+        threshold: 0.1
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+          }
+        });
+      }, observerOptions);
+
+      document.querySelectorAll('.reveal, .reveal-stagger').forEach(el => {
+        observer.observe(el);
+      });
+
+      // Smooth parallax effect for hero
+      let ticking = false;
+      window.addEventListener('scroll', () => {
+        if (!ticking) {
+          window.requestAnimationFrame(() => {
+            const scrolled = window.scrollY;
+            const heroContent = document.querySelector('.hero-content');
+            if (heroContent && scrolled < window.innerHeight) {
+              heroContent.style.transform = `translateY(${scrolled * 0.3}px)`;
+              heroContent.style.opacity = String(1 - scrolled / (window.innerHeight * 0.8));
+            }
+            ticking = false;
+          });
+          ticking = true;
+        }
+      });
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  @import '../styles/global.css';
+</style>

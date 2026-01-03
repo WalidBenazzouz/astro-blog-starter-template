@@ -1,0 +1,292 @@
+---
+// Hero Component - Full viewport brutalist hero with 3D Robot
+import SplineRobot from './SplineRobot.astro';
+---
+
+<section class="hero">
+  <div class="hero-wrapper">
+    <!-- Left: Text Content -->
+    <div class="hero-content">
+      <div class="hero-label">
+        <span class="label-line"></span>
+        <span class="label-text">Portfolio 2025</span>
+      </div>
+      
+      <h1 class="hero-name">
+        <span class="name-line">Walid</span>
+        <span class="name-line">Benazzouz</span>
+      </h1>
+      
+      <div class="hero-title">
+        <span class="title-text">AI Engineer</span>
+        <span class="title-separator">/</span>
+        <span class="title-text">Machine Learning</span>
+        <span class="title-separator">/</span>
+        <span class="title-text">Generative AI</span>
+      </div>
+      
+      <div class="hero-location">
+        <span class="location-icon">◉</span>
+        <span>Casablanca, Morocco</span>
+      </div>
+    </div>
+    
+    <!-- Right: 3D Robot -->
+    <div class="hero-robot">
+      <SplineRobot />
+    </div>
+  </div>
+  
+  <div class="scroll-indicator">
+    <div class="scroll-line"></div>
+    <span class="scroll-text">Scroll</span>
+  </div>
+  
+  <div class="hero-grid"></div>
+</section>
+
+<style>
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: var(--space-xl);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Two-column wrapper */
+  .hero-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 1400px;
+    gap: var(--space-xl);
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-content {
+    flex: 1;
+    max-width: 600px;
+    position: relative;
+    z-index: 2;
+    will-change: transform, opacity;
+  }
+
+  /* 3D Robot Container */
+  .hero-robot {
+    flex: 1;
+    max-width: 500px;
+    height: 500px;
+    position: relative;
+    z-index: 3;
+  }
+
+  .hero-label {
+    display: flex;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-xl);
+    animation: fadeSlideUp 1s var(--ease-out-expo) 0.2s both;
+  }
+
+  .label-line {
+    width: 40px;
+    height: 1px;
+    background: var(--color-accent);
+  }
+
+  .label-text {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+  }
+
+  .hero-name {
+    margin-bottom: var(--space-lg);
+  }
+
+  .name-line {
+    display: block;
+    line-height: 0.9;
+    animation: fadeSlideUp 1s var(--ease-out-expo) both;
+  }
+
+  .name-line:nth-child(1) {
+    animation-delay: 0.3s;
+  }
+
+  .name-line:nth-child(2) {
+    animation-delay: 0.4s;
+    color: var(--color-text-secondary);
+  }
+
+  .hero-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-lg);
+    animation: fadeSlideUp 1s var(--ease-out-expo) 0.5s both;
+  }
+
+  .title-text {
+    font-family: var(--font-mono);
+    font-size: clamp(0.875rem, 2vw, 1.125rem);
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .title-separator {
+    color: var(--color-accent);
+    font-weight: 300;
+  }
+
+  .hero-location {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    animation: fadeSlideUp 1s var(--ease-out-expo) 0.6s both;
+  }
+
+  .location-icon {
+    color: var(--color-accent);
+    font-size: 0.625rem;
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .scroll-indicator {
+    position: absolute;
+    bottom: var(--space-xl);
+    left: var(--space-xl);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-md);
+    animation: fadeIn 1s var(--ease-out-expo) 1s both;
+  }
+
+  .scroll-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--color-accent), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  .scroll-text {
+    font-family: var(--font-mono);
+    font-size: 0.625rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image: 
+      linear-gradient(to right, var(--color-border) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--color-border) 1px, transparent 1px);
+    background-size: 80px 80px;
+    opacity: 0.3;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(40px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  @keyframes scrollPulse {
+    0%, 100% { 
+      transform: scaleY(1);
+      opacity: 1;
+    }
+    50% { 
+      transform: scaleY(0.6);
+      opacity: 0.5;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      padding: var(--space-lg);
+    }
+
+    .hero-wrapper {
+      flex-direction: column;
+      gap: var(--space-lg);
+    }
+
+    .hero-content {
+      max-width: 100%;
+      text-align: center;
+    }
+
+    .hero-robot {
+      width: 100%;
+      max-width: 350px;
+      height: 350px;
+      margin: 0 auto;
+    }
+
+    .hero-label {
+      justify-content: center;
+    }
+
+    .hero-title {
+      flex-direction: column;
+      align-items: center;
+      gap: var(--space-xs);
+    }
+
+    .title-separator {
+      display: none;
+    }
+
+    .hero-location {
+      justify-content: center;
+    }
+
+    .scroll-indicator {
+      left: var(--space-lg);
+      bottom: var(--space-lg);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero-robot {
+      height: 280px;
+      max-width: 280px;
+    }
+  }
+</style>
