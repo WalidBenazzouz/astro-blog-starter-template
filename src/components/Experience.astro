@@ -4,46 +4,69 @@
 const experiences = [
   {
     type: "work",
-    title: "AI Engineer Intern",
-    organization: "Royal Air Maroc",
-    location: "Morocco",
-    period: "Jul - Sep 2025",
-    description: "Development of an AI chatbot for customer assistance. Implementation of RAG infrastructure and secure Admin panel."
+    title: "Stage Développement Applicatif & Data",
+    organization: "Crédit du Maroc (CDM)",
+    location: "Casablanca",
+    period: "Mars - Août 2026",
+    description: "Développement d'une application métier full-stack pour traitement automatisé de flux bancaires avec validation et conformité. Projet Data Services & Base Contrat : optimisation SQL, fiabilisation processus de réconciliation de données contractuelles. Amélioration qualité des données opérationnelles avec impact direct sur reportings métier.",
+    stack: "Java, Spring Boot, Oracle Database, SQL avancé"
   },
   {
     type: "work",
-    title: "IT Security Intern",
+    title: "Stage Développement IA & Infrastructure",
+    organization: "Royal Air Maroc (RAM)",
+    location: "Casablanca",
+    period: "Jul - Sep 2025",
+    description: "Chatbot IA générative pour assistance client avec intégration RAG. Infrastructure d'administration sécurisée (authentification, contrôle accès, logs) et API backend performante.",
+    stack: "Python, FastAPI, React, Groq"
+  },
+  {
+    type: "work",
+    title: "Stage Cybersécurité & Infrastructure",
     organization: "T-MAN Holding",
-    location: "Morocco",
+    location: "Casablanca",
     period: "Jul 2024",
-    description: "IT security audit on infrastructure. Implementation of firewall, backup system and access hardening."
+    description: "Audit sécurité IT complet avec identification vulnérabilités. Déploiement pare-feu et stratégie de sauvegarde automatisée.",
+    stack: ""
   }
 ];
 
 const education = [
   {
     type: "education",
-    title: "Master's in Applied AI (MIAGE IA2)",
-    organization: "Université Côte d'Azur",
-    location: "France",
+    title: "Master MIAGE IA2 — Intelligence Artificielle Appliquée",
+    organization: "Université Côte d'Azur (UCA)",
+    location: "Nice, France",
     period: "Oct 2025 - Jul 2026",
-    description: "Specialization in Applied Artificial Intelligence."
+    description: "Spécialisation en Intelligence Artificielle Appliquée. En cours.",
+    stack: ""
   },
   {
     type: "education",
-    title: "Engineering Degree in Computer Science",
+    title: "Cycle Ingénieur MIAGE",
     organization: "EMSI",
-    location: "Morocco",
-    period: "Oct 2022 - Jul 2025",
-    description: "Computer Science and Networks. Preparatory classes 2021-2023."
+    location: "Casablanca",
+    period: "Oct 2025 - Jul 2026",
+    description: "Double diplôme en partenariat avec UCA. En cours.",
+    stack: ""
   },
   {
     type: "education",
-    title: "Scientific Baccalaureate (BIOF)",
-    organization: "Lycée Yassamine International",
-    location: "Morocco",
-    period: "Sep 2020 - Jul 2021",
-    description: "French international option."
+    title: "Classes Préparatoires",
+    organization: "EMSI",
+    location: "Casablanca",
+    period: "Oct 2021 - Jul 2024",
+    description: "Cycle préparatoire en informatique et réseaux.",
+    stack: ""
+  },
+  {
+    type: "education",
+    title: "Baccalauréat Scientifique BIOF",
+    organization: "Lycée Yassamine",
+    location: "Casablanca",
+    period: "2021",
+    description: "Option internationale française.",
+    stack: ""
   }
 ];
 ---
@@ -71,6 +94,13 @@ const education = [
                   <span class="org-location">— {item.location}</span>
                 </div>
                 <p class="timeline-description">{item.description}</p>
+                {item.stack && (
+                  <div class="timeline-stack">
+                    {item.stack.split(", ").map((tech) => (
+                      <span class="stack-tag">{tech}</span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           ))}
@@ -80,7 +110,7 @@ const education = [
       <!-- Education -->
       <div class="timeline-section">
         <div class="section-label reveal">Education</div>
-        <h2 class="section-heading reveal">Academic</h2>
+        <h2 class="section-heading reveal">Formation</h2>
         
         <div class="timeline">
           {education.map((item, index) => (
@@ -205,6 +235,24 @@ const education = [
     font-size: 0.875rem;
     color: var(--color-text-muted);
     line-height: 1.6;
+  }
+
+  .timeline-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin-top: var(--space-sm);
+  }
+
+  .stack-tag {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--color-accent);
+    padding: 2px var(--space-sm);
+    border: 1px solid var(--color-accent-dim);
+    background: var(--color-accent-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   @media (max-width: 768px) {

@@ -1,61 +1,40 @@
 ---
-// Skills Component - Grouped skill blocks
+// Skills Component - Grouped skill blocks + Languages + Certifications
 
 const skillGroups = [
   {
-    title: "AI & Data",
-    skills: [
-      "Machine Learning",
-      "Deep Learning",
-      "Computer Vision",
-      "NLP",
-      "RAG Systems",
-      "LangChain",
-      "TensorFlow",
-      "PyTorch",
-      "Scikit-learn",
-      "Data Preprocessing"
-    ]
-  },
-  {
     title: "Backend & Architecture",
-    skills: [
-      "Python",
-      "Java",
-      "FastAPI",
-      "Spring Boot",
-      "REST APIs",
-      "Microservices",
-      "Kafka",
-      "API Gateway"
-    ]
+    skills: ["Java", "Spring Boot", "Python", "FastAPI", "APIs REST", "Microservices", "Kafka", "API Gateway"]
   },
   {
-    title: "DevOps & Cloud",
-    skills: [
-      "Docker",
-      "Kubernetes",
-      "CI/CD Pipelines",
-      "GitHub Actions",
-      "MySQL",
-      "PostgreSQL",
-      "MongoDB",
-      "Oracle"
-    ]
+    title: "IA & Data",
+    skills: ["Machine Learning", "Deep Learning", "RAG", "LangChain", "SQL Avancé", "TensorFlow", "PyTorch", "NLP"]
   },
   {
-    title: "Frontend & Tools",
-    skills: [
-      "React",
-      "Next.js",
-      "JavaScript",
-      "Git",
-      "VS Code",
-      "IntelliJ IDEA",
-      "Postman",
-      "Figma"
-    ]
+    title: "DevOps",
+    skills: ["Docker", "Kubernetes", "Git", "CI/CD", "GitHub Actions"]
+  },
+  {
+    title: "Databases",
+    skills: ["Oracle", "MySQL", "PostgreSQL", "MongoDB"]
+  },
+  {
+    title: "Frontend",
+    skills: ["React", "Angular", "JavaScript", "Next.js"]
   }
+];
+
+const languages = [
+  { name: "Français", level: "C2", label: "Courant", percent: 95 },
+  { name: "Anglais", level: "C1", label: "Avancé", percent: 85 },
+  { name: "Arabe", level: "", label: "Natif", percent: 100 },
+  { name: "Allemand", level: "A1", label: "Débutant", percent: 20 }
+];
+
+const certifications = [
+  { name: "APEX Cloud Developer", issuer: "Oracle" },
+  { name: "Docker / Kubernetes", issuer: "IBM" },
+  { name: "Python Specialization", issuer: "U. Michigan" }
 ];
 ---
 
@@ -75,6 +54,40 @@ const skillGroups = [
           </div>
         </div>
       ))}
+    </div>
+
+    <!-- Languages -->
+    <div class="sub-section">
+      <h2 class="skills-heading reveal">Languages</h2>
+      <div class="languages-grid">
+        {languages.map((lang, i) => (
+          <div class={`lang-card reveal-stagger stagger-${i + 1}`}>
+            <div class="lang-header">
+              <span class="lang-name">{lang.name}</span>
+              <span class="lang-level">{lang.level ? `${lang.level}` : ""} {lang.label}</span>
+            </div>
+            <div class="lang-bar-bg">
+              <div class="lang-bar-fill" style={`width: ${lang.percent}%`}></div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Certifications -->
+    <div class="sub-section">
+      <h2 class="skills-heading reveal">Certifications</h2>
+      <div class="certs-grid">
+        {certifications.map((cert, i) => (
+          <div class={`cert-card reveal-stagger stagger-${i + 1}`}>
+            <span class="cert-icon">◆</span>
+            <div class="cert-info">
+              <span class="cert-name">{cert.name}</span>
+              <span class="cert-issuer">{cert.issuer}</span>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   </div>
 </section>
@@ -139,8 +152,127 @@ const skillGroups = [
     background: var(--color-accent-dim);
   }
 
+  /* Sub-sections */
+  .sub-section {
+    margin-top: var(--space-2xl);
+    padding-top: var(--space-xl);
+    border-top: 1px solid var(--color-border);
+  }
+
+  /* Languages */
+  .languages-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: var(--space-lg);
+  }
+
+  .lang-card {
+    padding: var(--space-lg);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    transition: border-color var(--duration-normal) var(--ease-out-quart);
+  }
+
+  .lang-card:hover {
+    border-color: var(--color-accent);
+  }
+
+  .lang-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: var(--space-md);
+  }
+
+  .lang-name {
+    font-weight: 500;
+    font-size: 1rem;
+  }
+
+  .lang-level {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .lang-bar-bg {
+    width: 100%;
+    height: 4px;
+    background: var(--color-border);
+    overflow: hidden;
+  }
+
+  .lang-bar-fill {
+    height: 100%;
+    background: var(--color-accent);
+    transition: width 1s var(--ease-out-expo);
+  }
+
+  /* Certifications */
+  .certs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-lg);
+  }
+
+  .cert-card {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    background: var(--color-bg-card);
+    border: 1px solid var(--color-border);
+    transition: border-color var(--duration-normal) var(--ease-out-quart);
+  }
+
+  .cert-card:hover {
+    border-color: var(--color-accent);
+  }
+
+  .cert-icon {
+    color: var(--color-accent);
+    font-size: 0.75rem;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+
+  .cert-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+  }
+
+  .cert-name {
+    font-weight: 500;
+    font-size: 0.9375rem;
+  }
+
+  .cert-issuer {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
   @media (max-width: 768px) {
     .skills-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .languages-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .certs-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .languages-grid {
       grid-template-columns: 1fr;
     }
   }
